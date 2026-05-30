@@ -5,15 +5,15 @@ on:
     branches: [ main ]
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '20'
 
@@ -23,17 +23,8 @@ jobs:
     - name: Run tests
       run: npm test
 
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.BASTION_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          ssh -o StrictHostKeyChecking=no \
-            -i ~/.ssh/ecommerce-key.pem \
-            jarvis@${{ secrets.EC2_PRIVATE_IP }} \
-            "cd ~/ecommerce && \
-             git pull origin main && \
-             npm install --production && \
-             pm2 restart ecommerce-app"
+    - name: Build Docker image
+      run: docker build -t ecommerce-app .
+
+    - name: Deployment notification
+      run: echo "Build successful! Deploy manually to EC2."
