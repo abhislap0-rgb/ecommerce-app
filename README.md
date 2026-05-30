@@ -84,3 +84,4 @@ Internet → ALB (port 80) → EC2 (Nginx → Node.js) → RDS MySQL
                                     ↓
                               CloudWatch (monitoring)
 ```
+# pipeline test
